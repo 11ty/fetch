@@ -188,7 +188,7 @@ class FileCache {
 		// have to read the entire contents via JSON.parse (or otherwise) to check the cache validity.
 		this.#counts.read++;
 		let type = metadata?.type || this.getType();
-		let data = fs.readFileSync(this.contentsPath);
+		let data = fs.readFileSync(this.contentsPath, type !== "buffer" ? "utf8" : null);
 		if (type === "json" || type === "parsed-xml") {
 			data = JSON.parse(data);
 		}
