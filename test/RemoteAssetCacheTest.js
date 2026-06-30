@@ -231,9 +231,9 @@ test("Error with `cause`", async (t) => {
 	try {
 		await asset.fetch();
 	} catch (e) {
-		t.is(
-			e.message,
-			`Bad response for https://www.11ty.dev/img/possum-asldkfjaklsdf.png (404): Not Found`,
+		// Node 26 changed the error messaging here
+		t.truthy(
+			e.message.startsWith(`Bad response for https://www.11ty.dev/img/possum-asldkfjaklsdf.png (404):`),
 		);
 		t.truthy(e.cause);
 	} finally {
