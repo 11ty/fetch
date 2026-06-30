@@ -30,11 +30,7 @@
 		"eleventy",
 		"eleventy-utility"
 	],
-	"author": {
-		"name": "Zach Leatherman",
-		"email": "zachleatherman@gmail.com",
-		"url": "https://zachleat.com/"
-	},
+	"author": "Zach Leatherman (https://zachleat.com/)",
 	"license": "MIT",
 	"bugs": {
 		"url": "https://github.com/11ty/fetch/issues"
@@ -42,11 +38,11 @@
 	"homepage": "https://github.com/11ty/fetch#readme",
 	"devDependencies": {
 		"ava": "^6.4.1",
-		"prettier": "^3.7.3"
+		"prettier": "^3.9.4"
 	},
 	"dependencies": {
 		"@11ty/eleventy-utils": "^2.0.7",
-		"@rgrove/parse-xml": "^4.2.0",
+		"@rgrove/parse-xml": "^4.2.1",
 		"debug": "^4.4.3",
 		"flatted": "^3.4.2",
 		"p-queue": "6.6.2"
