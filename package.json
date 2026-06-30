@@ -7,7 +7,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/11ty/eleventy-fetch.git"
+		"url": "git+https://github.com/11ty/fetch.git"
 	},
 	"main": "eleventy-fetch.js",
 	"scripts": {
@@ -37,9 +37,9 @@
 	},
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/11ty/eleventy-fetch/issues"
+		"url": "https://github.com/11ty/fetch/issues"
 	},
-	"homepage": "https://github.com/11ty/eleventy-fetch#readme",
+	"homepage": "https://github.com/11ty/fetch#readme",
 	"devDependencies": {
 		"ava": "^6.4.1",
 		"prettier": "^3.7.3"

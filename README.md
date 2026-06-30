@@ -50,6 +50,6 @@ npm run test
 
 ## Community Roadmap
 
-- [Top Feature Requests](https://github.com/11ty/eleventy-fetch/issues?q=label%3Aneeds-votes+sort%3Areactions-%2B1-desc+label%3Aenhancement) (Add your own votes using the 👍 reaction)
-- [Top Bugs 😱](https://github.com/11ty/eleventy-fetch/issues?q=is%3Aissue+is%3Aopen+label%3Abug+sort%3Areactions-%2B1-desc) (Add your own votes using the 👍 reaction)
-- [Newest Bugs 🙀](https://github.com/11ty/eleventy-fetch/issues?q=is%3Aopen+is%3Aissue+label%3Abug)
+- [Top Feature Requests](https://github.com/11ty/fetch/issues?q=label%3Aneeds-votes+sort%3Areactions-%2B1-desc+label%3Aenhancement) (Add your own votes using the 👍 reaction)
+- [Top Bugs 😱](https://github.com/11ty/fetch/issues?q=is%3Aissue+is%3Aopen+label%3Abug+sort%3Areactions-%2B1-desc) (Add your own votes using the 👍 reaction)
+- [Newest Bugs 🙀](https://github.com/11ty/fetch/issues?q=is%3Aopen+is%3Aissue+label%3Abug)
