@@ -1,28 +1,29 @@
-const test = require("ava");
+const test = require("node:test");
+const assert = require("node:assert/strict");
 const Cache = require("../eleventy-fetch.js");
 const { queue, Fetch } = Cache;
 
-test("Queue without options", async (t) => {
+test("Queue without options", async () => {
 	let example = "https://www.11ty.dev/";
 	let req = await queue(example, () => {
 		let asset = new RemoteAssetCache(example);
 		return asset.fetch();
 	});
 
-	t.truthy(Buffer.isBuffer(req))
+	assert.ok(Buffer.isBuffer(req))
 
 	try {
 		await req.destroy();
 	} catch (e) {}
 });
 
-test("Double Fetch", async (t) => {
+test("Double Fetch", async () => {
 	let pngUrl = "https://www.11ty.dev/img/possum.png";
 	let ac1 = Cache(pngUrl);
 	let ac2 = Cache(pngUrl);
 
 	// Make sure we only fetch once!
-	t.is(ac1, ac2);
+	assert.equal(ac1, ac2);
 
 	await ac1;
 	await ac2;
@@ -34,13 +35,13 @@ test("Double Fetch", async (t) => {
 	} catch (e) {}
 });
 
-test("Double Fetch (dry run)", async (t) => {
+test("Double Fetch (dry run)", async () => {
 	let pngUrl = "https://www.11ty.dev/img/possum.png";
 	let ac1 = Cache(pngUrl, { dryRun: true });
 	let ac2 = Cache(pngUrl, { dryRun: true });
 
 	// Make sure we only fetch once!
-	t.is(ac1, ac2);
+	assert.equal(ac1, ac2);
 
 	await ac1;
 	await ac2;
@@ -50,10 +51,10 @@ test("Double Fetch (dry run)", async (t) => {
 		dryRun: true,
 	});
 	// file is now accessible
-	t.false(forTestOnly.hasAnyCacheFiles());
+	assert.equal(forTestOnly.hasAnyCacheFiles(), false);
 });
 
-test("Double Fetch async function (dry run)", async (t) => {
+test("Double Fetch async function (dry run)", async () => {
 	let expected = { mockKey: "mockValue" };
 
 	async function fetch() {
@@ -70,17 +71,17 @@ test("Double Fetch async function (dry run)", async (t) => {
 	});
 
 	// two distinct fetches
-	t.not(ac1, ac2);
+	assert.notEqual(ac1, ac2);
 
 	let result1 = await ac1;
 	let result2 = await ac2;
 
-	t.deepEqual(result1, result2);
-	t.deepEqual(result1, expected);
-	t.deepEqual(result2, expected);
+	assert.deepEqual(result1, result2);
+	assert.deepEqual(result1, expected);
+	assert.deepEqual(result2, expected);
 });
 
-test("Double Fetch 404 errors should only fetch once", async (t) => {
+test("Double Fetch 404 errors should only fetch once", async () => {
 	let ac1 = Cache("https://httpstat.us/404", {
 		dryRun: true,
 	});
@@ -89,17 +90,17 @@ test("Double Fetch 404 errors should only fetch once", async (t) => {
 	});
 
 	// Make sure we only fetch once!
-	t.is(ac1, ac2);
+	assert.equal(ac1, ac2);
 
-	await t.throwsAsync(async () => await ac1);
-	await t.throwsAsync(async () => await ac2);
+	await assert.rejects(async () => await ac1);
+	await assert.rejects(async () => await ac2);
 });
 
 test("Docs example https://www.11ty.dev/docs/plugins/fetch/#manually-store-your-own-data-in-the-cache", async (t) => {
 	t.plan(2);
 
 	async function fn() {
-		t.true(true);
+		t.assert.ok(true);
 		return new Promise(resolve => {
 			setTimeout(() => {
 				resolve({ followerCount: 1000 })
@@ -113,12 +114,12 @@ test("Docs example https://www.11ty.dev/docs/plugins/fetch/#manually-store-your-
 		requestId: "zachleat_twitter_followers"
 	});
 
-	t.deepEqual(await fakeFollowers, {
+	t.assert.deepStrictEqual(await fakeFollowers, {
 		followerCount: 1000
 	});
 });
 
-test("Raw Fetch using queue method", async (t) => {
+test("Raw Fetch using queue method", async () => {
 	let pngUrl = "https://www.11ty.dev/img/possum.png?q=1";
 	let ac1 = Fetch(pngUrl);
 	let ac2 = Fetch(pngUrl);
@@ -132,16 +133,16 @@ test("Raw Fetch using queue method", async (t) => {
 	} catch (e) {}
 
 	// Make sure the instance is the same
-	t.is(ac1, ac2);
+	assert.equal(ac1, ac2);
 
 	let result1 = await ac1.queue();
-	t.false(ac1.wasLastFetchCacheHit())
+	assert.equal(ac1.wasLastFetchCacheHit(), false)
 
 	let result2 = await ac1.queue();
 	// reuses the same fetch
-	t.false(ac1.wasLastFetchCacheHit())
+	assert.equal(ac1.wasLastFetchCacheHit(), false)
 
-	t.is(result1, result2);
+	assert.equal(result1, result2);
 
 	// file is now accessible
 	try {
@@ -153,7 +154,7 @@ test("Raw Fetch using queue method", async (t) => {
 });
 
 
-test("Raw Fetch using fetch method", async (t) => {
+test("Raw Fetch using fetch method", async () => {
 	let pngUrl = "https://www.11ty.dev/img/possum.png?q=2";
 	let ac1 = Fetch(pngUrl);
 	let ac2 = Fetch(pngUrl);
@@ -167,15 +168,15 @@ test("Raw Fetch using fetch method", async (t) => {
 	} catch (e) {}
 
 	// Make sure the instance is the same
-	t.is(ac1, ac2);
+	assert.equal(ac1, ac2);
 
 	let result1 = await ac1.fetch();
-	t.false(ac1.wasLastFetchCacheHit())
+	assert.equal(ac1.wasLastFetchCacheHit(), false)
 
 	let result2 = await ac1.fetch();
-	t.true(ac1.wasLastFetchCacheHit())
+	assert.equal(ac1.wasLastFetchCacheHit(), true)
 
-	t.is(result1, result2);
+	assert.equal(result1, result2);
 
 	// file is now accessible
 	try {
@@ -186,7 +187,7 @@ test("Raw Fetch using fetch method", async (t) => {
 	} catch (e) {}
 });
 
-test("Raw Fetch using fetch method (check parallel fetch promise reuse)", async (t) => {
+test("Raw Fetch using fetch method (check parallel fetch promise reuse)", async () => {
 	let pngUrl = "https://www.11ty.dev/img/possum.png?q=3";
 	let ac1 = Fetch(pngUrl);
 	let ac2 = Fetch(pngUrl);
@@ -200,13 +201,13 @@ test("Raw Fetch using fetch method (check parallel fetch promise reuse)", async 
 	} catch (e) {}
 
 	// Make sure the instance is the same
-	t.is(ac1, ac2);
+	assert.equal(ac1, ac2);
 
 	let [result1, result2] = await Promise.all([ac1.fetch(), ac1.fetch()]);
 
-	t.is(result1, result2);
+	assert.equal(result1, result2);
 
-	t.false(ac1.wasLastFetchCacheHit())
+	assert.equal(ac1.wasLastFetchCacheHit(), false)
 
 	// file is now accessible
 	try {
@@ -217,7 +218,7 @@ test("Raw Fetch using fetch method (check parallel fetch promise reuse)", async 
 	} catch (e) {}
 });
 
-test("Refetches data on transient failures", async (t) => {
+test("Refetches data on transient failures", async () => {
 	let firstFetch = true;
 	let successData = "Good data";
 	let failData = "Transient error";
@@ -229,6 +230,6 @@ test("Refetches data on transient failures", async (t) => {
 		return successData;
 	}, {duration: "0s"})
 
-	await t.throwsAsync(async () => await ac1.queue())
-	t.is(await ac1.queue(), successData);
+	await assert.rejects(async () => await ac1.queue())
+	assert.equal(await ac1.queue(), successData);
 })

@@ -1,58 +1,59 @@
-const test = require("ava");
+const test = require("node:test");
+const assert = require("node:assert/strict");
 const path = require("node:path");
 const { Util } = require("../");
 const AssetCache = require("../src/AssetCache");
 const RemoteAssetCache = require("../src/RemoteAssetCache");
 
-test("getDurationMs", (t) => {
+test("getDurationMs", () => {
 	let cache = new RemoteAssetCache("https://example.com/");
-	// t.is(cache.getDurationMs("0"), 0);
-	t.is(cache.getDurationMs("0s"), 0);
-	t.is(cache.getDurationMs("1s"), 1000);
-	t.is(cache.getDurationMs("1m"), 60 * 1000);
-	t.is(cache.getDurationMs("1h"), 60 * 60 * 1000);
-	t.is(cache.getDurationMs("1d"), 24 * 60 * 60 * 1000);
-	t.is(cache.getDurationMs("1w"), 7 * 24 * 60 * 60 * 1000);
-	t.is(cache.getDurationMs("1y"), 365 * 24 * 60 * 60 * 1000);
+	// assert.equal(cache.getDurationMs("0"), 0);
+	assert.equal(cache.getDurationMs("0s"), 0);
+	assert.equal(cache.getDurationMs("1s"), 1000);
+	assert.equal(cache.getDurationMs("1m"), 60 * 1000);
+	assert.equal(cache.getDurationMs("1h"), 60 * 60 * 1000);
+	assert.equal(cache.getDurationMs("1d"), 24 * 60 * 60 * 1000);
+	assert.equal(cache.getDurationMs("1w"), 7 * 24 * 60 * 60 * 1000);
+	assert.equal(cache.getDurationMs("1y"), 365 * 24 * 60 * 60 * 1000);
 
-	t.is(cache.getDurationMs("5s"), 5000);
-	t.is(cache.getDurationMs("0m"), 0);
-	t.is(cache.getDurationMs("7m"), 60 * 7000);
-	t.is(cache.getDurationMs("9h"), 60 * 60 * 9000);
-	t.is(cache.getDurationMs("0h"), 0);
-	t.is(cache.getDurationMs("11d"), 24 * 60 * 60 * 11000);
-	t.is(cache.getDurationMs("0d"), 0);
-	t.is(cache.getDurationMs("13w"), 7 * 24 * 60 * 60 * 13000);
-	t.is(cache.getDurationMs("0w"), 0);
-	t.is(cache.getDurationMs("15y"), 365 * 24 * 60 * 60 * 15000);
-	t.is(cache.getDurationMs("0y"), 0);
+	assert.equal(cache.getDurationMs("5s"), 5000);
+	assert.equal(cache.getDurationMs("0m"), 0);
+	assert.equal(cache.getDurationMs("7m"), 60 * 7000);
+	assert.equal(cache.getDurationMs("9h"), 60 * 60 * 9000);
+	assert.equal(cache.getDurationMs("0h"), 0);
+	assert.equal(cache.getDurationMs("11d"), 24 * 60 * 60 * 11000);
+	assert.equal(cache.getDurationMs("0d"), 0);
+	assert.equal(cache.getDurationMs("13w"), 7 * 24 * 60 * 60 * 13000);
+	assert.equal(cache.getDurationMs("0w"), 0);
+	assert.equal(cache.getDurationMs("15y"), 365 * 24 * 60 * 60 * 15000);
+	assert.equal(cache.getDurationMs("0y"), 0);
 });
 
-test("Local hash file names", async (t) => {
+test("Local hash file names", async () => {
 	let pngUrl = "https://www.zachleat.com/img/avatar-2017-big.png";
-	t.is(
+	assert.equal(
 		new RemoteAssetCache(pngUrl).cachePath,
 		path.resolve(".", `.cache/eleventy-fetch-${AssetCache.getHash(pngUrl)}`),
 	);
 
 	let fontUrl = "https://www.zachleat.com/font.woff";
-	t.is(
+	assert.equal(
 		new RemoteAssetCache(fontUrl).cachePath,
 		path.resolve(".", `.cache/eleventy-fetch-${AssetCache.getHash(fontUrl)}`),
 	);
 
 	let fontUrl2 = "https://www.zachleat.com/font.woff2";
-	t.is(
+	assert.equal(
 		new RemoteAssetCache(fontUrl2).cachePath,
 		path.resolve(".", `.cache/eleventy-fetch-${AssetCache.getHash(fontUrl2)}`),
 	);
 });
 
-test("Clean url", async (t) => {
+test("Clean url", async () => {
 	let shortUrl = "https://example.com/207115/photos/243-0-1.jpg";
 	let longUrl =
 		"https://example.com/207115/photos/243-0-1.jpg?Policy=FAKE_THING~2123ksjhd&Signature=FAKE_THING~2123ksjhd&Key-Pair-Id=FAKE_THING~2123ksjhd";
-	t.is(
+	assert.equal(
 		new RemoteAssetCache(longUrl, ".cache", {
 			removeUrlQueryParams: true,
 		}).displayUrl,
@@ -60,23 +61,23 @@ test("Clean url", async (t) => {
 	);
 });
 
-test("Local hash without file extension in URL", async (t) => {
+test("Local hash without file extension in URL", async () => {
 	let noExt = "https://twitter.com/zachleat/profile_image?size=bigger";
-	t.is(
+	assert.equal(
 		new RemoteAssetCache(noExt).cachePath,
 		path.resolve(".", `.cache/eleventy-fetch-${AssetCache.getHash(noExt)}`),
 	);
 });
 
-test("Unique hashes for URLs", async (t) => {
+test("Unique hashes for URLs", async () => {
 	let apiURL1 = "https://api.zooniverse.org/projects/illustratedlife/talk/subjects/ASC0000qu3";
 	let apiURL2 = "https://api.zooniverse.org/projects/illustratedlife/talk/subjects/ASC0000q71";
 	let cachePath1 = new RemoteAssetCache(apiURL1).cachePath;
 	let cachePath2 = new RemoteAssetCache(apiURL2).cachePath;
-	t.not(cachePath1, cachePath2);
+	assert.notEqual(cachePath1, cachePath2);
 });
 
-test("Same hashes for implicit and explicit HTTP GET", async (t) => {
+test("Same hashes for implicit and explicit HTTP GET", async () => {
 	let sameURL = "https://example.com/";
 	let cachePath1 = new RemoteAssetCache(sameURL, ".cache", {
 		fetchOptions: { method: "GET" },
@@ -84,10 +85,10 @@ test("Same hashes for implicit and explicit HTTP GET", async (t) => {
 	let cachePath2 = new RemoteAssetCache(sameURL, ".cache", {
 		fetchOptions: {},
 	}).cachePath;
-	t.is(cachePath1, cachePath2);
+	assert.equal(cachePath1, cachePath2);
 });
 
-test("Unique hashes for different HTTP methods", async (t) => {
+test("Unique hashes for different HTTP methods", async () => {
 	let sameURL = "https://example.com/";
 	let cachePath1 = new RemoteAssetCache(sameURL, ".cache", {
 		fetchOptions: { method: "POST" },
@@ -95,10 +96,10 @@ test("Unique hashes for different HTTP methods", async (t) => {
 	let cachePath2 = new RemoteAssetCache(sameURL, ".cache", {
 		fetchOptions: { method: "DELETE" },
 	}).cachePath;
-	t.not(cachePath1, cachePath2);
+	assert.notEqual(cachePath1, cachePath2);
 });
 
-test("Unique hashes for different HTTP bodies", async (t) => {
+test("Unique hashes for different HTTP bodies", async () => {
 	let sameURL = "https://example.com/";
 	let cachePath1 = new RemoteAssetCache(sameURL, ".cache", {
 		fetchOptions: { body: "123" },
@@ -106,10 +107,10 @@ test("Unique hashes for different HTTP bodies", async (t) => {
 	let cachePath2 = new RemoteAssetCache(sameURL, ".cache", {
 		fetchOptions: { body: "456" },
 	}).cachePath;
-	t.not(cachePath1, cachePath2);
+	assert.notEqual(cachePath1, cachePath2);
 });
 
-test("Fetching!", async (t) => {
+test("Fetching!", async () => {
 	let pngUrl = "https://www.11ty.dev/img/possum.png";
 	let ac = new RemoteAssetCache(pngUrl);
 	let buffer = await ac.fetch();
@@ -117,22 +118,22 @@ test("Fetching!", async (t) => {
 		await ac.destroy();
 	} catch (e) {}
 
-	t.is(ac.fetchCount, 1);
-	t.is(Buffer.isBuffer(buffer), true);
+	assert.equal(ac.fetchCount, 1);
+	assert.equal(Buffer.isBuffer(buffer), true);
 });
 
-test("Fetching (dry run)!", async (t) => {
+test("Fetching (dry run)!", async () => {
 	let svgUrl = "https://www.11ty.dev/img/possum.png";
 	let ac = new RemoteAssetCache(svgUrl, ".cache", {
 		dryRun: true,
 	});
 	let buffer = await ac.fetch();
-	t.is(Buffer.isBuffer(buffer), true);
-	t.is(ac.fetchCount, 1);
-	t.false(ac.hasAnyCacheFiles());
+	assert.equal(Buffer.isBuffer(buffer), true);
+	assert.equal(ac.fetchCount, 1);
+	assert.equal(ac.hasAnyCacheFiles(), false);
 });
 
-test("Fetching pass in URL", async (t) => {
+test("Fetching pass in URL", async () => {
 	let pngUrl = new URL("https://www.11ty.dev/img/possum.png");
 	let ac = new RemoteAssetCache(pngUrl);
 	let buffer = await ac.fetch();
@@ -140,11 +141,11 @@ test("Fetching pass in URL", async (t) => {
 		await ac.destroy();
 	} catch (e) {}
 
-	t.is(Buffer.isBuffer(buffer), true);
+	assert.equal(Buffer.isBuffer(buffer), true);
 });
 
-test("Fetching pass non-stringable", async (t) => {
-	let e = await t.throwsAsync(async () => {
+test("Fetching pass non-stringable", async () => {
+	await assert.rejects(async () => {
 		class B {}
 		let source = new B();
 
@@ -152,12 +153,12 @@ test("Fetching pass non-stringable", async (t) => {
 			dryRun: true,
 		});
 		await ac.fetch();
+	}, {
+		message: "Invalid source: must be a string, function, or Promise. If a function or Promise, you must provide a `toString()` method or an `options.requestId` unique key. Received: [object Object]",
 	});
-
-	t.is(e.message, "Invalid source: must be a string, function, or Promise. If a function or Promise, you must provide a `toString()` method or an `options.requestId` unique key. Received: [object Object]");
 });
 
-test("Fetching pass class with toString()", async (t) => {
+test("Fetching pass class with toString()", async () => {
 	class B {
 		toString() {
 			return "https://www.11ty.dev/img/possum.png";
@@ -170,14 +171,14 @@ test("Fetching pass class with toString()", async (t) => {
 		await ac.destroy();
 	} catch (e) {}
 
-	t.is(Buffer.isBuffer(buffer), true);
+	assert.equal(Buffer.isBuffer(buffer), true);
 });
 
-test("formatUrlForDisplay (manual query param removal)", async (t) => {
+test("formatUrlForDisplay (manual query param removal)", async () => {
 	let finalUrl = "https://example.com/207115/photos/243-0-1.jpg";
 	let longUrl =
 		"https://example.com/207115/photos/243-0-1.jpg?Policy=FAKE_THING~2123ksjhd&Signature=FAKE_THING~2123ksjhd&Key-Pair-Id=FAKE_THING~2123ksjhd";
-	t.is(
+	assert.equal(
 		new RemoteAssetCache(longUrl, ".cache", {
 			removeUrlQueryParams: false,
 			formatUrlForDisplay(url) {
@@ -189,11 +190,11 @@ test("formatUrlForDisplay (manual query param removal)", async (t) => {
 	);
 });
 
-test("formatUrlForDisplay (using removeUrlQueryParams)", async (t) => {
+test("formatUrlForDisplay (using removeUrlQueryParams)", async () => {
 	let finalUrl = "https://example.com/207115/photos/243-0-1.jpg";
 	let longUrl =
 		"https://example.com/207115/photos/243-0-1.jpg?Policy=FAKE_THING~2123ksjhd&Signature=FAKE_THING~2123ksjhd&Key-Pair-Id=FAKE_THING~2123ksjhd";
-	t.is(
+	assert.equal(
 		new RemoteAssetCache(longUrl, ".cache", {
 			removeUrlQueryParams: true,
 			formatUrlForDisplay(url) {
@@ -204,10 +205,10 @@ test("formatUrlForDisplay (using removeUrlQueryParams)", async (t) => {
 	);
 });
 
-test("formatUrlForDisplay (using removeUrlQueryParams and requestId)", async (t) => {
+test("formatUrlForDisplay (using removeUrlQueryParams and requestId)", async () => {
 	let longUrl =
 		"https://example.com/207115/photos/243-0-1.jpg?Policy=FAKE_THING~2123ksjhd&Signature=FAKE_THING~2123ksjhd&Key-Pair-Id=FAKE_THING~2123ksjhd";
-	t.is(
+	assert.equal(
 		new RemoteAssetCache(function() {}, ".cache", {
 			requestId: longUrl,
 			removeUrlQueryParams: true,
@@ -219,29 +220,30 @@ test("formatUrlForDisplay (using removeUrlQueryParams and requestId)", async (t)
 	);
 });
 
-test("Issue #6, URLs with HTTP Auth", async (t) => {
+test("Issue #6, URLs with HTTP Auth", async () => {
 	let url = "https://${USERNAME}:${PASSWORD}@api.pinboard.in/v1/posts/all?format=json&tag=read";
-	t.true(Util.isFullUrl(url));
+	assert.equal(Util.isFullUrl(url), true);
 });
 
-test("Error with `cause`", async (t) => {
+test("Error with `cause`", async () => {
 	let finalUrl = "https://www.11ty.dev/img/possum-asldkfjaklsdf.png";
 	let asset = new RemoteAssetCache(finalUrl);
 
 	try {
-		await asset.fetch();
-	} catch (e) {
-		// Node 26 changed the error messaging here
-		t.truthy(
-			e.message.startsWith(`Bad response for https://www.11ty.dev/img/possum-asldkfjaklsdf.png (404):`),
-		);
-		t.truthy(e.cause);
+		await assert.rejects(asset.fetch(), (e) => {
+			// Node 26 changed the error messaging here
+			assert.ok(
+				e.message.startsWith(`Bad response for https://www.11ty.dev/img/possum-asldkfjaklsdf.png (404):`),
+			);
+			assert.ok(e.cause);
+			return true;
+		});
 	} finally {
 		await asset.destroy();
 	}
 });
 
-test("supports promises that resolve", async (t) => {
+test("supports promises that resolve", async () => {
 	let expected = { mockKey: "mockValue" };
 	let promise = Promise.resolve(expected);
 	let asset = new RemoteAssetCache(promise, undefined, {
@@ -254,11 +256,11 @@ test("supports promises that resolve", async (t) => {
 		await asset.destroy();
 	} catch (e) {}
 
-	t.deepEqual(actual, expected);
+	assert.deepEqual(actual, expected);
 
 });
 
-test("supports promises that reject", async (t) => {
+test("supports promises that reject", async () => {
 	let expected = "mock error message";
 	let cause = new Error("mock cause");
 	let promise = Promise.reject(new Error(expected, { cause }));
@@ -268,10 +270,7 @@ test("supports promises that reject", async (t) => {
 	});
 
 	try {
-		await asset.fetch();
-	} catch (e) {
-		t.is(e.message, expected);
-		t.is(e.cause, cause);
+		await assert.rejects(asset.fetch(), { message: expected, cause });
 	} finally {
 		try {
 			await asset.destroy();
@@ -279,7 +278,7 @@ test("supports promises that reject", async (t) => {
 	}
 });
 
-test("supports async functions that return data", async (t) => {
+test("supports async functions that return data", async () => {
 	let expected = { mockKey: "mockValue" };
 	let asyncFunction = async () => {
 		return Promise.resolve(expected);
@@ -294,35 +293,31 @@ test("supports async functions that return data", async (t) => {
 		await asset.destroy();
 	} catch (e) {}
 
-	t.deepEqual(actual, expected);
+	assert.deepEqual(actual, expected);
 
 });
 
-test("supports async functions that throw", async (t) => {
+test("supports async functions that throw", async () => {
 	let expected = "mock error message";
 	let cause = new Error("mock cause");
 	let asyncFunction = async () => {
 		throw new Error(expected, { cause });
 	};
 
+	let asset = new RemoteAssetCache(asyncFunction, undefined, {
+		requestId: "async-throws",
+	});
+
 	try {
-		let ac = new RemoteAssetCache(asyncFunction, undefined, {
-			requestId: "async-throws",
-		});
-		await ac.fetch();
-	} catch (e) {
-		t.is(e.message, expected);
-		t.is(e.cause, cause);
+		await assert.rejects(asset.fetch(), { message: expected, cause });
 	} finally {
 		try {
 			await asset.destroy();
 		} catch (e) {}
 	}
-
-
 });
 
-test("type: xml", async (t) => {
+test("type: xml", async () => {
 	let feedUrl = "https://www.11ty.dev/blog/feed.xml";
 	let ac = new RemoteAssetCache(feedUrl, ".cache", {
 		type: "xml"
@@ -332,10 +327,10 @@ test("type: xml", async (t) => {
 		await ac.destroy();
 	} catch (e) {}
 
-	t.true(xml.length > 50)
+	assert.equal(xml.length > 50, true)
 });
 
-test("type: parsed-xml", async (t) => {
+test("type: parsed-xml", async () => {
 	let feedUrl = "https://www.11ty.dev/blog/feed.xml";
 	let ac = new RemoteAssetCache(feedUrl, ".cache", {
 		type: "parsed-xml"
@@ -345,10 +340,10 @@ test("type: parsed-xml", async (t) => {
 		await ac.destroy();
 	} catch (e) {}
 
-	t.is(xml.children.length, 1)
+	assert.equal(xml.children.length, 1)
 });
 
-test("returnType: response, cache miss", async (t) => {
+test("returnType: response, cache miss", async () => {
 	let feedUrl = "https://www.11ty.dev/blog/feed.xml";
 	let ac = new RemoteAssetCache(feedUrl, ".cache", {
 		type: "xml",
@@ -360,17 +355,17 @@ test("returnType: response, cache miss", async (t) => {
 		await ac.destroy();
 	} catch (e) {}
 
-	t.is(ac.fetchCount, 1);
-	t.is(response.url, feedUrl);
-	t.is(response.status, 200);
-	t.truthy(response.headers.server);
-	t.truthy(response.headers['last-modified']);
-	t.truthy(response.body);
-	t.is(response.cache, "miss");
+	assert.equal(ac.fetchCount, 1);
+	assert.equal(response.url, feedUrl);
+	assert.equal(response.status, 200);
+	assert.ok(response.headers.server);
+	assert.ok(response.headers['last-modified']);
+	assert.ok(response.body);
+	assert.equal(response.cache, "miss");
 });
 
 
-test("returnType: response, cache hit", async (t) => {
+test("returnType: response, cache hit", async () => {
 	let feedUrl = "https://www.11ty.dev/blog/feed.xml";
 	let ac = new RemoteAssetCache(feedUrl, ".cache", {
 		type: "xml",
@@ -387,6 +382,6 @@ test("returnType: response, cache hit", async (t) => {
 		await ac.destroy();
 	} catch (e) {}
 
-	t.is(response.cache, "hit");
+	assert.equal(response.cache, "hit");
 });
 
