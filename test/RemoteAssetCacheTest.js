@@ -4,6 +4,9 @@ import path from "node:path";
 import { Util } from "../fetch.js";
 import AssetCache from "../src/AssetCache.js";
 import RemoteAssetCache from "../src/RemoteAssetCache.js";
+import { fakeUrl, installFakeFetch } from "./helpers/FakeFetch.js";
+
+installFakeFetch();
 
 test("getDurationMs", () => {
 	let cache = new RemoteAssetCache("https://example.com/");
@@ -111,7 +114,7 @@ test("Unique hashes for different HTTP bodies", async () => {
 });
 
 test("Fetching!", async () => {
-	let pngUrl = "https://www.11ty.dev/img/possum.png";
+	let pngUrl = fakeUrl("/remote/possum.png");
 	let ac = new RemoteAssetCache(pngUrl);
 	let buffer = await ac.fetch();
 	try {
@@ -123,8 +126,8 @@ test("Fetching!", async () => {
 });
 
 test("Fetching (dry run)!", async () => {
-	let svgUrl = "https://www.11ty.dev/img/possum.png?dryrun=remote";
-	let ac = new RemoteAssetCache(svgUrl, ".cache", {
+	let pngUrl = fakeUrl("/remote/dry-run/possum.png");
+	let ac = new RemoteAssetCache(pngUrl, ".cache", {
 		dryRun: true,
 	});
 	let buffer = await ac.fetch();
@@ -134,7 +137,7 @@ test("Fetching (dry run)!", async () => {
 });
 
 test("Fetching pass in URL", async () => {
-	let pngUrl = new URL("https://www.11ty.dev/img/possum.png");
+	let pngUrl = new URL(fakeUrl("/remote/possum.png"));
 	let ac = new RemoteAssetCache(pngUrl);
 	let buffer = await ac.fetch();
 	try {
@@ -161,7 +164,7 @@ test("Fetching pass non-stringable", async () => {
 test("Fetching pass class with toString()", async () => {
 	class B {
 		toString() {
-			return "https://www.11ty.dev/img/possum.png";
+			return fakeUrl("/remote/possum.png");
 		}
 	}
 
@@ -226,14 +229,13 @@ test("Issue #6, URLs with HTTP Auth", async () => {
 });
 
 test("Error with `cause`", async () => {
-	let finalUrl = "https://www.11ty.dev/img/possum-asldkfjaklsdf.png";
+	let finalUrl = fakeUrl("/remote/missing.png");
 	let asset = new RemoteAssetCache(finalUrl);
 
 	try {
 		await assert.rejects(asset.fetch(), (e) => {
-			// Node 26 changed the error messaging here
 			assert.ok(
-				e.message.startsWith(`Bad response for https://www.11ty.dev/img/possum-asldkfjaklsdf.png (404):`),
+				e.message.startsWith(`Bad response for ${finalUrl} (404):`),
 			);
 			assert.ok(e.cause);
 			return true;
@@ -318,7 +320,7 @@ test("supports async functions that throw", async () => {
 });
 
 test("type: xml", async () => {
-	let feedUrl = "https://www.11ty.dev/blog/feed.xml";
+	let feedUrl = fakeUrl("/remote/feed.xml");
 	let ac = new RemoteAssetCache(feedUrl, ".cache", {
 		type: "xml"
 	});
@@ -331,7 +333,7 @@ test("type: xml", async () => {
 });
 
 test("type: parsed-xml", async () => {
-	let feedUrl = "https://www.11ty.dev/blog/feed.xml";
+	let feedUrl = fakeUrl("/remote/feed.xml");
 	let ac = new RemoteAssetCache(feedUrl, ".cache", {
 		type: "parsed-xml"
 	});
@@ -344,7 +346,7 @@ test("type: parsed-xml", async () => {
 });
 
 test("returnType: response, cache miss", async () => {
-	let feedUrl = "https://www.11ty.dev/blog/feed.xml";
+	let feedUrl = fakeUrl("/remote/feed.xml");
 	let ac = new RemoteAssetCache(feedUrl, ".cache", {
 		type: "xml",
 		returnType: "response",
@@ -366,7 +368,7 @@ test("returnType: response, cache miss", async () => {
 
 
 test("returnType: response, cache hit", async () => {
-	let feedUrl = "https://www.11ty.dev/blog/feed.xml";
+	let feedUrl = fakeUrl("/remote/feed.xml");
 	let ac = new RemoteAssetCache(feedUrl, ".cache", {
 		type: "xml",
 		returnType: "response",

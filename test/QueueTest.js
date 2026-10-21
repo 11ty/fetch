@@ -1,9 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import Cache, { queue, Fetch } from "../fetch.js";
+import { fakeUrl, installFakeFetch } from "./helpers/FakeFetch.js";
+
+installFakeFetch();
 
 test("Queue without options", async () => {
-	let example = "https://www.11ty.dev/";
+	let example = fakeUrl("/queue/");
 	let req = await queue(example, () => {
 		let asset = new RemoteAssetCache(example);
 		return asset.fetch();
@@ -17,7 +20,7 @@ test("Queue without options", async () => {
 });
 
 test("Double Fetch", async () => {
-	let pngUrl = "https://www.11ty.dev/img/possum.png";
+	let pngUrl = fakeUrl("/queue/possum.png");
 	let ac1 = Cache(pngUrl);
 	let ac2 = Cache(pngUrl);
 
@@ -35,7 +38,7 @@ test("Double Fetch", async () => {
 });
 
 test("Double Fetch (dry run)", async () => {
-	let pngUrl = "https://www.11ty.dev/img/possum.png?dryrun=queue";
+	let pngUrl = fakeUrl("/queue/dry-run/possum.png");
 	let ac1 = Cache(pngUrl, { dryRun: true });
 	let ac2 = Cache(pngUrl, { dryRun: true });
 
@@ -81,10 +84,10 @@ test("Double Fetch async function (dry run)", async () => {
 });
 
 test("Double Fetch 404 errors should only fetch once", async () => {
-	let ac1 = Cache("https://httpstat.us/404", {
+	let ac1 = Cache(fakeUrl("/queue/404"), {
 		dryRun: true,
 	});
-	let ac2 = Cache("https://httpstat.us/404", {
+	let ac2 = Cache(fakeUrl("/queue/404"), {
 		dryRun: true,
 	});
 
@@ -119,7 +122,7 @@ test("Docs example https://www.11ty.dev/docs/plugins/fetch/#manually-store-your-
 });
 
 test("Raw Fetch using queue method", async () => {
-	let pngUrl = "https://www.11ty.dev/img/possum.png?q=1";
+	let pngUrl = fakeUrl("/queue/possum.png?q=1");
 	let ac1 = Fetch(pngUrl);
 	let ac2 = Fetch(pngUrl);
 
@@ -154,7 +157,7 @@ test("Raw Fetch using queue method", async () => {
 
 
 test("Raw Fetch using fetch method", async () => {
-	let pngUrl = "https://www.11ty.dev/img/possum.png?q=2";
+	let pngUrl = fakeUrl("/queue/possum.png?q=2");
 	let ac1 = Fetch(pngUrl);
 	let ac2 = Fetch(pngUrl);
 
@@ -187,7 +190,7 @@ test("Raw Fetch using fetch method", async () => {
 });
 
 test("Raw Fetch using fetch method (check parallel fetch promise reuse)", async () => {
-	let pngUrl = "https://www.11ty.dev/img/possum.png?q=3";
+	let pngUrl = fakeUrl("/queue/possum.png?q=3");
 	let ac1 = Fetch(pngUrl);
 	let ac2 = Fetch(pngUrl);
 
