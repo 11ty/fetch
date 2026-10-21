@@ -31,7 +31,7 @@ let queue = new PQueue({
 	concurrency: globalOptions.concurrency,
 });
 
-queue.on("active", () => {
+queue.addEventListener("active", () => {
 	debug(`Concurrency: ${queue.concurrency}, Size: ${queue.size}, Pending: ${queue.pending}`);
 });
 
