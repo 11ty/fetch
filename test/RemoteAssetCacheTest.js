@@ -123,7 +123,7 @@ test("Fetching!", async () => {
 });
 
 test("Fetching (dry run)!", async () => {
-	let svgUrl = "https://www.11ty.dev/img/possum.png";
+	let svgUrl = "https://www.11ty.dev/img/possum.png?dryrun=remote";
 	let ac = new RemoteAssetCache(svgUrl, ".cache", {
 		dryRun: true,
 	});

@@ -35,7 +35,7 @@ test("Double Fetch", async () => {
 });
 
 test("Double Fetch (dry run)", async () => {
-	let pngUrl = "https://www.11ty.dev/img/possum.png";
+	let pngUrl = "https://www.11ty.dev/img/possum.png?dryrun=queue";
 	let ac1 = Cache(pngUrl, { dryRun: true });
 	let ac2 = Cache(pngUrl, { dryRun: true });
 
