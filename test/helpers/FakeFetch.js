@@ -37,7 +37,12 @@ export function installFakeFetch() {
 		// Never responds, like a server that accepts the connection and goes quiet.
 		if (url.pathname.endsWith("/hang")) {
 			return new Promise((resolve, reject) => {
-				init.signal?.addEventListener("abort", () => reject(init.signal.reason));
+				// Stands in for the open socket; `AbortSignal.timeout()` alone won’t keep Node 22 alive.
+				let keepAlive = setInterval(() => {}, 1000);
+				init.signal?.addEventListener("abort", () => {
+					clearInterval(keepAlive);
+					reject(init.signal.reason);
+				});
 			});
 		}
 
