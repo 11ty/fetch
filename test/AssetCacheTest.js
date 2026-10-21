@@ -132,3 +132,15 @@ test("v5 flatted cache file", async () => {
 	assert.deepEqual(asset.getCachedValue(), undefined);
 	assert.deepEqual(asset.getCachedContents(), undefined);
 });
+
+test("Empty json contents file doesn’t throw, issue #102", async () => {
+	let asset = new AssetCache("truncated-json");
+	await asset.save({ name: "Sophia Smith" }, "json");
+
+	fs.writeFileSync(asset.cache.contentsPath, "");
+
+	let reloaded = new AssetCache("truncated-json");
+	assert.equal(reloaded.getCachedValue(), undefined);
+
+	await asset.destroy();
+});

@@ -191,6 +191,10 @@ export default class FileCache {
 		let type = metadata?.type || this.getType();
 		let data = fs.readFileSync(this.contentsPath, type !== "buffer" ? "utf8" : null);
 		if (type === "json" || type === "parsed-xml") {
+			// See #102
+			if (data === "") {
+				return;
+			}
 			data = JSON.parse(data);
 		}
 		this.#contents = data;
