@@ -16,6 +16,10 @@ updates:
     versioning-strategy: increase
     allow:
       - dependency-type: "production"
+    groups:
+      npm:
+        patterns: ["*"]
+        update-types: [minor, patch]
     assignees: [zachleat]
 
   - package-ecosystem: github-actions
@@ -24,4 +28,7 @@ updates:
       interval: weekly
     cooldown:
       default-days: 7
+    groups:
+      github-actions:
+        patterns: ["*"]
     assignees: [zachleat]

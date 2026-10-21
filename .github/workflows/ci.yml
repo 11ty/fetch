@@ -1,5 +1,9 @@
 name: Node Unit Tests
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore: [".github/**"]
+  pull_request:
+    paths-ignore: [".github/**"]
 permissions: read-all
 jobs:
   build:
