@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import Cache, { queue, Fetch } from "../eleventy-fetch.js";
+import Cache, { queue, Fetch } from "../fetch.js";
 
 test("Queue without options", async () => {
 	let example = "https://www.11ty.dev/";

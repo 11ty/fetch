@@ -10,7 +10,7 @@
 		"url": "git+https://github.com/11ty/fetch.git"
 	},
 	"type": "module",
-	"main": "eleventy-fetch.js",
+	"main": "fetch.js",
 	"scripts": {
 		"test": "node --test \"test/*.js\"",
 		"sample": "node sample",
@@ -18,7 +18,7 @@
 	},
 	"files": [
 		"src/",
-		"eleventy-fetch.js"
+		"fetch.js"
 	],
 	"engines": {
 		"node": ">=22"

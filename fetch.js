@@ -64,12 +64,12 @@ function createRemoteAssetCache(source, rawOptions = {}) {
 	return inst;
 }
 
-export default function EleventyFetch(source, options) {
+export default function Fetch(source, options) {
 	let instance = createRemoteAssetCache(source, options);
 	return instance.queue();
 }
 
-Object.defineProperty(EleventyFetch, "concurrency", {
+Object.defineProperty(Fetch, "concurrency", {
 	get: function () {
 		return queue.concurrency;
 	},
@@ -90,7 +90,7 @@ const Util = {
 };
 
 // Properties on the default export are kept for backwards compat.
-Object.assign(EleventyFetch, {
+Object.assign(Fetch, {
 	Fetch: createRemoteAssetCache,
 	queue: deprecatedQueue,
 	Util,
@@ -107,5 +107,5 @@ export {
 	AssetCache,
 	Sources,
 	// `require()` returns the default export.
-	EleventyFetch as "module.exports",
+	Fetch as "module.exports",
 };

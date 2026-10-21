@@ -1,6 +1,6 @@
 const startCpu = process.cpuUsage();
 import os from "node:os";
-import saveLocal from "./eleventy-fetch.js";
+import saveLocal from "./fetch.js";
 const AssetCache = saveLocal.AssetCache;
 
 (async () => {
