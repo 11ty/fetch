@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import Cache, { queue, Fetch } from "../fetch.js";
+import Cache, { queue, createFetch } from "../fetch.js";
 import { fakeUrl, installFakeFetch } from "./helpers/FakeFetch.js";
 
 installFakeFetch();
@@ -30,7 +30,7 @@ test("Double Fetch", async () => {
 	await ac1;
 	await ac2;
 
-	let forDestroyOnly = Fetch(pngUrl);
+	let forDestroyOnly = createFetch(pngUrl);
 	// file is now accessible
 	try {
 		await forDestroyOnly.destroy();
@@ -48,7 +48,7 @@ test("Double Fetch (dry run)", async () => {
 	await ac1;
 	await ac2;
 
-	let forTestOnly = Fetch(pngUrl, {
+	let forTestOnly = createFetch(pngUrl, {
 		cacheDirectory: ".cache",
 		dryRun: true,
 	});
@@ -123,8 +123,8 @@ test("Docs example https://www.11ty.dev/docs/plugins/fetch/#manually-store-your-
 
 test("Raw Fetch using queue method", async () => {
 	let pngUrl = fakeUrl("/queue/possum.png?q=1");
-	let ac1 = Fetch(pngUrl);
-	let ac2 = Fetch(pngUrl);
+	let ac1 = createFetch(pngUrl);
+	let ac2 = createFetch(pngUrl);
 
 	// Destroy to clear any existing cache
 	try {
@@ -158,8 +158,8 @@ test("Raw Fetch using queue method", async () => {
 
 test("Raw Fetch using fetch method", async () => {
 	let pngUrl = fakeUrl("/queue/possum.png?q=2");
-	let ac1 = Fetch(pngUrl);
-	let ac2 = Fetch(pngUrl);
+	let ac1 = createFetch(pngUrl);
+	let ac2 = createFetch(pngUrl);
 
 	// Destroy to clear any existing cache
 	try {
@@ -191,8 +191,8 @@ test("Raw Fetch using fetch method", async () => {
 
 test("Raw Fetch using fetch method (check parallel fetch promise reuse)", async () => {
 	let pngUrl = fakeUrl("/queue/possum.png?q=3");
-	let ac1 = Fetch(pngUrl);
-	let ac2 = Fetch(pngUrl);
+	let ac1 = createFetch(pngUrl);
+	let ac2 = createFetch(pngUrl);
 
 	// Destroy to clear any existing cache
 	try {
@@ -224,7 +224,7 @@ test("Refetches data on transient failures", async () => {
 	let firstFetch = true;
 	let successData = "Good data";
 	let failData = "Transient error";
-	let ac1 = Fetch(() => {
+	let ac1 = createFetch(() => {
 		if (firstFetch) {
 			firstFetch = false;
 			throw new Error(failData)

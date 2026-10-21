@@ -85,13 +85,21 @@ function deprecatedQueue(source, queueCallback, options) {
 	return instance.queue();
 }
 
+// Removed name for `createFetch`, which returns a RemoteAssetCache instance (not the fetched data).
+function removedFetch() {
+	throw new Error(
+		"To avoid confusion, the named `Fetch` export from @11ty/eleventy-fetch has been renamed to `createFetch`. You almost certainly want to use the default export!",
+	);
+}
+
 const Util = {
 	isFullUrl: Sources.isFullUrl,
 };
 
 // Properties on the default export are kept for backwards compat.
 Object.assign(Fetch, {
-	Fetch: createRemoteAssetCache,
+	createFetch: createRemoteAssetCache,
+	Fetch: removedFetch,
 	queue: deprecatedQueue,
 	Util,
 	RemoteAssetCache,
@@ -100,7 +108,8 @@ Object.assign(Fetch, {
 });
 
 export {
-	createRemoteAssetCache as Fetch,
+	createRemoteAssetCache as createFetch,
+	removedFetch as Fetch,
 	deprecatedQueue as queue,
 	Util,
 	RemoteAssetCache,
