@@ -1,13 +1,13 @@
-const debugUtil = require("debug");
-const { parseXml } = require('@rgrove/parse-xml');
+import debugUtil from "debug";
+import { parseXml } from '@rgrove/parse-xml';
 
-const Sources = require("./Sources.js");
-const AssetCache = require("./AssetCache.js");
+import Sources from "./Sources.js";
+import AssetCache from "./AssetCache.js";
 
 const debug = debugUtil("Eleventy:Fetch");
 const debugAssets = debugUtil("Eleventy:Assets");
 
-class RemoteAssetCache extends AssetCache {
+export default class RemoteAssetCache extends AssetCache {
 	#queue;
 	#queuePromise;
 	#fetchPromise;
@@ -232,4 +232,3 @@ class RemoteAssetCache extends AssetCache {
 		return this.#fetchPromise;
 	}
 }
-module.exports = RemoteAssetCache;

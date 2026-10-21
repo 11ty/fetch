@@ -1,7 +1,7 @@
-const fs = require("node:fs");
+import fs from "node:fs";
 // const debug = require("debug")("Eleventy:Assets");
 
-class ExistsCache {
+export default class ExistsCache {
 	#checks = new Map();
 	#count = 0;
 
@@ -20,5 +20,3 @@ class ExistsCache {
 		return exists;
 	}
 }
-
-module.exports = ExistsCache;

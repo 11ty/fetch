@@ -1,7 +1,6 @@
-const test = require("node:test");
-const assert = require("node:assert/strict");
-const Cache = require("../eleventy-fetch.js");
-const { queue, Fetch } = Cache;
+import test from "node:test";
+import assert from "node:assert/strict";
+import Cache, { queue, Fetch } from "../eleventy-fetch.js";
 
 test("Queue without options", async () => {
 	let example = "https://www.11ty.dev/";

@@ -1,17 +1,17 @@
-const fs = require("node:fs");
-const path = require("node:path");
-const debugUtil = require("debug");
-const { parse } = require("flatted");
+import fs from "node:fs";
+import path from "node:path";
+import debugUtil from "debug";
+import { parse } from "flatted";
 
 const debug = debugUtil("Eleventy:Fetch");
 const debugAssets = debugUtil("Eleventy:Assets");
 
-const DirectoryManager = require("./DirectoryManager.js");
-const ExistsCache = require("./ExistsCache.js");
+import DirectoryManager from "./DirectoryManager.js";
+import ExistsCache from "./ExistsCache.js";
 
 let existsCache = new ExistsCache();
 
-class FileCache {
+export default class FileCache {
 	#source;
 	#directoryManager;
 	#metadata;
@@ -233,5 +233,3 @@ class FileCache {
 		return Array.from(paths);
 	}
 }
-
-module.exports = FileCache;

@@ -1,8 +1,8 @@
-const test = require("node:test");
-const assert = require("node:assert/strict");
-const path = require("node:path");
-const fs = require("node:fs");
-const AssetCache = require("../src/AssetCache");
+import test from "node:test";
+import assert from "node:assert/strict";
+import path from "node:path";
+import fs from "node:fs";
+import AssetCache from "../src/AssetCache.js";
 
 function normalizePath(pathStr) {
 	if (typeof pathStr !== "string") {

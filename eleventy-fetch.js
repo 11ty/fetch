@@ -1,10 +1,11 @@
-const { default: PQueue } = require("p-queue");
-const debug = require("debug")("Eleventy:Fetch");
+import PQueue from "p-queue";
+import debugUtil from "debug";
+const debug = debugUtil("Eleventy:Fetch");
 
-const Sources = require("./src/Sources.js");
-const RemoteAssetCache = require("./src/RemoteAssetCache.js");
-const AssetCache = require("./src/AssetCache.js");
-const DirectoryManager = require("./src/DirectoryManager.js");
+import Sources from "./src/Sources.js";
+import RemoteAssetCache from "./src/RemoteAssetCache.js";
+import AssetCache from "./src/AssetCache.js";
+import DirectoryManager from "./src/DirectoryManager.js";
 
 const globalOptions = {
 	type: "buffer",
@@ -63,12 +64,12 @@ function createRemoteAssetCache(source, rawOptions = {}) {
 	return inst;
 }
 
-module.exports = function (source, options) {
+export default function EleventyFetch(source, options) {
 	let instance = createRemoteAssetCache(source, options);
 	return instance.queue();
-};
+}
 
-Object.defineProperty(module.exports, "concurrency", {
+Object.defineProperty(EleventyFetch, "concurrency", {
 	get: function () {
 		return queue.concurrency;
 	},
@@ -77,18 +78,34 @@ Object.defineProperty(module.exports, "concurrency", {
 	},
 });
 
-module.exports.Fetch = createRemoteAssetCache;
-
 // Deprecated API kept for backwards compat, instead: use default export directly.
 // Intentional: queueCallback is ignored here
-module.exports.queue = function(source, queueCallback, options) {
+function deprecatedQueue(source, queueCallback, options) {
 	let instance = createRemoteAssetCache(source, options);
 	return instance.queue();
-};
+}
 
-module.exports.Util = {
+const Util = {
 	isFullUrl: Sources.isFullUrl,
 };
-module.exports.RemoteAssetCache = RemoteAssetCache;
-module.exports.AssetCache = AssetCache;
-module.exports.Sources = Sources;
+
+// Properties on the default export are kept for backwards compat.
+Object.assign(EleventyFetch, {
+	Fetch: createRemoteAssetCache,
+	queue: deprecatedQueue,
+	Util,
+	RemoteAssetCache,
+	AssetCache,
+	Sources,
+});
+
+export {
+	createRemoteAssetCache as Fetch,
+	deprecatedQueue as queue,
+	Util,
+	RemoteAssetCache,
+	AssetCache,
+	Sources,
+	// `require()` returns the default export.
+	EleventyFetch as "module.exports",
+};

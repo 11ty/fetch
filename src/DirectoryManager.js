@@ -1,7 +1,8 @@
-const fs = require("node:fs");
-const debugAssets = require("debug")("Eleventy:Assets");
+import fs from "node:fs";
+import debugUtil from "debug";
+const debugAssets = debugUtil("Eleventy:Assets");
 
-class DirectoryManager {
+export default class DirectoryManager {
   #dirs = new Set();
 
   isCreated(dir) {
@@ -18,5 +19,3 @@ class DirectoryManager {
     fs.mkdirSync(dir, { recursive: true });
   }
 }
-
-module.exports = DirectoryManager;

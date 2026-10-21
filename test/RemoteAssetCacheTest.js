@@ -1,9 +1,9 @@
-const test = require("node:test");
-const assert = require("node:assert/strict");
-const path = require("node:path");
-const { Util } = require("../");
-const AssetCache = require("../src/AssetCache");
-const RemoteAssetCache = require("../src/RemoteAssetCache");
+import test from "node:test";
+import assert from "node:assert/strict";
+import path from "node:path";
+import { Util } from "../eleventy-fetch.js";
+import AssetCache from "../src/AssetCache.js";
+import RemoteAssetCache from "../src/RemoteAssetCache.js";
 
 test("getDurationMs", () => {
 	let cache = new RemoteAssetCache("https://example.com/");

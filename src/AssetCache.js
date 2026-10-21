@@ -1,14 +1,14 @@
-const fs = require("node:fs");
-const path = require("node:path");
-const { DateCompare, createHashHexSync } = require("@11ty/eleventy-utils");
+import fs from "node:fs";
+import path from "node:path";
+import { DateCompare, createHashHexSync } from "@11ty/eleventy-utils";
 
-const FileCache = require("./FileCache.js");
-const Sources = require("./Sources.js");
+import FileCache from "./FileCache.js";
+import Sources from "./Sources.js";
 
-const debugUtil = require("debug");
+import debugUtil from "debug";
 const debug = debugUtil("Eleventy:Fetch");
 
-class AssetCache {
+export default class AssetCache {
 	#source;
 	#hash;
 	#customFilename;
@@ -267,4 +267,3 @@ class AssetCache {
 		}))
 	}
 }
-module.exports = AssetCache;

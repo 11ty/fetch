@@ -1,4 +1,4 @@
-class Sources {
+export default class Sources {
 	static isFullUrl(url) {
 		try {
 			if(url instanceof URL) {
@@ -46,5 +46,3 @@ class Sources {
 		return new Error("Invalid source: must be a string, function, or Promise. If a function or Promise, you must provide a `toString()` method or an `options.requestId` unique key. Received: " + source, { cause: errorCause });
 	}
 }
-
-module.exports = Sources;
