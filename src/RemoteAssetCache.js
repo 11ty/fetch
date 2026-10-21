@@ -137,6 +137,17 @@ export default class RemoteAssetCache extends AssetCache {
 		return this.#lastFetchType === "hit";
 	}
 
+	// Accepts milliseconds or a duration string like "60s"; falsy disables the timeout.
+	getTimeoutMs(timeout) {
+		if (!timeout) {
+			return 0;
+		}
+		if (typeof timeout === "number") {
+			return timeout;
+		}
+		return this.getDurationMs(timeout);
+	}
+
 	async #fetch(optionsOverride = {}) {
 		// Important: no disk writes when dryRun
 		// As of Fetch v4, reads are now allowed!
@@ -161,7 +172,14 @@ export default class RemoteAssetCache extends AssetCache {
 				// sync or async function
 				body = await this.source();
 			} else {
-				let fetchOptions = optionsOverride.fetchOptions || this.options.fetchOptions || {};
+				let fetchOptions = { ...(optionsOverride.fetchOptions || this.options.fetchOptions) };
+				let timeoutMs = this.getTimeoutMs(optionsOverride.timeout ?? this.options.timeout);
+				if (timeoutMs > 0) {
+					let timeoutSignal = AbortSignal.timeout(timeoutMs);
+					fetchOptions.signal = fetchOptions.signal
+						? AbortSignal.any([fetchOptions.signal, timeoutSignal])
+						: timeoutSignal;
+				}
 				if (!Sources.isFullUrl(this.source)) {
 					throw Sources.getInvalidSourceError(this.source);
 				}

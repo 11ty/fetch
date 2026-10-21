@@ -12,6 +12,7 @@ const globalOptions = {
 	directory: ".cache",
 	concurrency: 10,
 	fetchOptions: {},
+	timeout: "60s", // milliseconds or a duration string, falsy to disable
 	dryRun: false, // don’t write anything to the file system
 
 	// *does* affect cache key hash

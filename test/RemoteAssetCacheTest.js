@@ -247,6 +247,33 @@ test("Error with `cause`", async () => {
 	}
 });
 
+test("Times out a request that never responds", async () => {
+	let finalUrl = fakeUrl("/remote/hang");
+	let asset = new RemoteAssetCache(finalUrl, undefined, { timeout: 50 });
+
+	await assert.rejects(asset.fetch(), (e) => {
+		assert.ok(e.message.startsWith(`Bad response for ${finalUrl}:`));
+		assert.equal(e.cause.name, "TimeoutError");
+		return true;
+	});
+});
+
+test("Timeout keeps a user-provided signal", async () => {
+	let finalUrl = fakeUrl("/remote/hang");
+	let controller = new AbortController();
+	let asset = new RemoteAssetCache(finalUrl, undefined, {
+		timeout: "60s",
+		fetchOptions: { signal: controller.signal },
+	});
+
+	let promise = asset.fetch();
+	controller.abort();
+	await assert.rejects(promise, (e) => {
+		assert.equal(e.cause.name, "AbortError");
+		return true;
+	});
+});
+
 test("supports promises that resolve", async () => {
 	let expected = { mockKey: "mockValue" };
 	let promise = Promise.resolve(expected);

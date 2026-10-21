@@ -28,10 +28,17 @@ export function fakeUrl(pathname) {
 }
 
 export function installFakeFetch() {
-	globalThis.fetch = async (input) => {
+	globalThis.fetch = async (input, init = {}) => {
 		let url = new URL(input);
 		if (url.origin !== ORIGIN) {
 			throw new TypeError(`fetch failed: ${url} is not a fake URL`);
+		}
+
+		// Never responds, like a server that accepts the connection and goes quiet.
+		if (url.pathname.endsWith("/hang")) {
+			return new Promise((resolve, reject) => {
+				init.signal?.addEventListener("abort", () => reject(init.signal.reason));
+			});
 		}
 
 		let name = url.pathname.split("/").pop();
