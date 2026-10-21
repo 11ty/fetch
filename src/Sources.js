@@ -1,7 +1,7 @@
 export default class Sources {
 	static isFullUrl(url) {
 		try {
-			if(url instanceof URL) {
+			if (url instanceof URL) {
 				return true;
 			}
 
@@ -15,10 +15,10 @@ export default class Sources {
 
 	static isValidSource(source) {
 		// String (url?)
-		if(typeof source === "string") {
+		if (typeof source === "string") {
 			return true;
 		}
-		if(this.isValidComplexSource(source)) {
+		if (this.isValidComplexSource(source)) {
 			return true;
 		}
 		return false;
@@ -26,16 +26,16 @@ export default class Sources {
 
 	static isValidComplexSource(source) {
 		// Async/sync Function
-		if(typeof source === "function") {
+		if (typeof source === "function") {
 			return true;
 		}
-		if(typeof source === "object") {
+		if (typeof source === "object") {
 			// Raw promise
-			if(typeof source.then === "function") {
+			if (typeof source.then === "function") {
 				return true;
 			}
 			// anything string-able
-			if(typeof source.toString === "function") {
+			if (typeof source.toString === "function") {
 				return true;
 			}
 		}
@@ -43,6 +43,10 @@ export default class Sources {
 	}
 
 	static getInvalidSourceError(source, errorCause) {
-		return new Error("Invalid source: must be a string, function, or Promise. If a function or Promise, you must provide a `toString()` method or an `options.requestId` unique key. Received: " + source, { cause: errorCause });
+		return new Error(
+			"Invalid source: must be a string, function, or Promise. If a function or Promise, you must provide a `toString()` method or an `options.requestId` unique key. Received: " +
+				source,
+			{ cause: errorCause },
+		);
 	}
 }

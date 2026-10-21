@@ -73,7 +73,7 @@ test("Uses `requestId` property when caching a promise", async () => {
 });
 
 test("Uses `requestId` property when caching a function", async () => {
-	let asset = new AssetCache(function() {}, ".cache", {
+	let asset = new AssetCache(function () {}, ".cache", {
 		requestId: "mock-function",
 	});
 	await asset.save({ name: "Sophia Smith" }, "json");
@@ -84,7 +84,7 @@ test("Uses `requestId` property when caching a function", async () => {
 });
 
 test("Uses `requestId` property when caching an async function", async () => {
-	let asset = new AssetCache(async function() {}, ".cache", {
+	let asset = new AssetCache(async function () {}, ".cache", {
 		requestId: "mock-async-function",
 	});
 

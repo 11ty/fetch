@@ -12,7 +12,7 @@ test("Queue without options", async () => {
 		return asset.fetch();
 	});
 
-	assert.ok(Buffer.isBuffer(req))
+	assert.ok(Buffer.isBuffer(req));
 
 	try {
 		await req.destroy();
@@ -61,7 +61,7 @@ test("Double Fetch async function (dry run)", async () => {
 
 	async function fetch() {
 		return Promise.resolve(expected);
-	};
+	}
 
 	let ac1 = Cache(fetch, {
 		dryRun: true,
@@ -103,9 +103,9 @@ test("Docs example https://www.11ty.dev/docs/plugins/fetch/#manually-store-your-
 
 	async function fn() {
 		t.assert.ok(true);
-		return new Promise(resolve => {
+		return new Promise((resolve) => {
 			setTimeout(() => {
-				resolve({ followerCount: 1000 })
+				resolve({ followerCount: 1000 });
 			});
 		});
 	}
@@ -113,11 +113,11 @@ test("Docs example https://www.11ty.dev/docs/plugins/fetch/#manually-store-your-
 	let fakeFollowers = Cache(fn, {
 		type: "json",
 		dryRun: true,
-		requestId: "zachleat_twitter_followers"
+		requestId: "zachleat_twitter_followers",
 	});
 
 	t.assert.deepStrictEqual(await fakeFollowers, {
-		followerCount: 1000
+		followerCount: 1000,
 	});
 });
 
@@ -138,11 +138,11 @@ test("Raw Fetch using queue method", async () => {
 	assert.equal(ac1, ac2);
 
 	let result1 = await ac1.queue();
-	assert.equal(ac1.wasLastFetchCacheHit(), false)
+	assert.equal(ac1.wasLastFetchCacheHit(), false);
 
 	let result2 = await ac1.queue();
 	// reuses the same fetch
-	assert.equal(ac1.wasLastFetchCacheHit(), false)
+	assert.equal(ac1.wasLastFetchCacheHit(), false);
 
 	assert.equal(result1, result2);
 
@@ -154,7 +154,6 @@ test("Raw Fetch using queue method", async () => {
 		await ac2.destroy();
 	} catch (e) {}
 });
-
 
 test("Raw Fetch using fetch method", async () => {
 	let pngUrl = fakeUrl("/queue/possum.png?q=2");
@@ -173,10 +172,10 @@ test("Raw Fetch using fetch method", async () => {
 	assert.equal(ac1, ac2);
 
 	let result1 = await ac1.fetch();
-	assert.equal(ac1.wasLastFetchCacheHit(), false)
+	assert.equal(ac1.wasLastFetchCacheHit(), false);
 
 	let result2 = await ac1.fetch();
-	assert.equal(ac1.wasLastFetchCacheHit(), true)
+	assert.equal(ac1.wasLastFetchCacheHit(), true);
 
 	assert.equal(result1, result2);
 
@@ -209,7 +208,7 @@ test("Raw Fetch using fetch method (check parallel fetch promise reuse)", async 
 
 	assert.equal(result1, result2);
 
-	assert.equal(ac1.wasLastFetchCacheHit(), false)
+	assert.equal(ac1.wasLastFetchCacheHit(), false);
 
 	// file is now accessible
 	try {
@@ -224,14 +223,17 @@ test("Refetches data on transient failures", async () => {
 	let firstFetch = true;
 	let successData = "Good data";
 	let failData = "Transient error";
-	let ac1 = createFetch(() => {
-		if (firstFetch) {
-			firstFetch = false;
-			throw new Error(failData)
-		}
-		return successData;
-	}, {duration: "0s"})
+	let ac1 = createFetch(
+		() => {
+			if (firstFetch) {
+				firstFetch = false;
+				throw new Error(failData);
+			}
+			return successData;
+		},
+		{ duration: "0s" },
+	);
 
-	await assert.rejects(async () => await ac1.queue())
+	await assert.rejects(async () => await ac1.queue());
 	assert.equal(await ac1.queue(), successData);
-})
+});

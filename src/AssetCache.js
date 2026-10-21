@@ -18,7 +18,7 @@ export default class AssetCache {
 	#directoryManager;
 
 	constructor(source, cacheDirectory, options = {}) {
-		if(!Sources.isValidSource(source)) {
+		if (!Sources.isValidSource(source)) {
 			throw Sources.getInvalidSourceError(source);
 		}
 
@@ -34,10 +34,14 @@ export default class AssetCache {
 
 		// Compute the filename only once
 		if (typeof this.options.filenameFormat === "function") {
-			this.#customFilename = AssetCache.cleanFilename(this.options.filenameFormat(uniqueKey, this.hash));
+			this.#customFilename = AssetCache.cleanFilename(
+				this.options.filenameFormat(uniqueKey, this.hash),
+			);
 
 			if (typeof this.#customFilename !== "string" || this.#customFilename.length === 0) {
-				throw new Error(`The provided filenameFormat callback function needs to return valid filename characters.`);
+				throw new Error(
+					`The provided filenameFormat callback function needs to return valid filename characters.`,
+				);
 			}
 		}
 	}
@@ -66,14 +70,14 @@ export default class AssetCache {
 	static getCacheKey(source, options) {
 		// RemoteAssetCache passes in a string here, which skips this check (requestId is already used upstream)
 		if (Sources.isValidComplexSource(source)) {
-			if(options.requestId) {
+			if (options.requestId) {
 				return options.requestId;
 			}
 
-			if(typeof source.toString === "function") {
+			if (typeof source.toString === "function") {
 				// 	return source.toString();
 				let toStr = source.toString();
-				if(toStr !== "function() {}" && toStr !== "[object Object]") {
+				if (toStr !== "function() {}" && toStr !== "[object Object]") {
 					return toStr;
 				}
 			}
@@ -183,7 +187,7 @@ export default class AssetCache {
 	}
 
 	async save(contents, type = "buffer", metadata = {}) {
-		if(!contents) {
+		if (!contents) {
 			throw new Error("save(contents) expects contents (was falsy)");
 		}
 
@@ -198,12 +202,12 @@ export default class AssetCache {
 	}
 
 	getCachedValue() {
-		if(this.options.returnType === "response") {
+		if (this.options.returnType === "response") {
 			return {
 				...this.cachedObject.metadata?.response,
 				body: this.getCachedContents(),
 				cache: "hit",
-			}
+			};
 		}
 
 		return this.getCachedContents();
@@ -214,11 +218,14 @@ export default class AssetCache {
 	}
 
 	isCacheValid(duration = this.duration) {
-		if(!this.cachedObject || !this.cachedObject?.cachedAt) {
+		if (!this.cachedObject || !this.cachedObject?.cachedAt) {
 			return false;
 		}
 
-		if(this.cachedObject?.type && DateCompare.isTimestampWithinDuration(this.cachedObject?.cachedAt, duration)) {
+		if (
+			this.cachedObject?.type &&
+			DateCompare.isTimestampWithinDuration(this.cachedObject?.cachedAt, duration)
+		) {
 			return this.cache.hasContents(this.cachedObject?.type); // check file system to make files haven’t been purged.
 		}
 
@@ -250,8 +257,8 @@ export default class AssetCache {
 
 	// for testing
 	hasAnyCacheFiles() {
-		for(let p of this.cache.getAllPossibleFilePaths()) {
-			if(fs.existsSync(p)) {
+		for (let p of this.cache.getAllPossibleFilePaths()) {
+			if (fs.existsSync(p)) {
 				return true;
 			}
 		}
@@ -260,10 +267,12 @@ export default class AssetCache {
 
 	// for testing
 	async destroy() {
-		await Promise.all(this.cache.getAllPossibleFilePaths().map(path => {
-			if (fs.existsSync(path)) {
-				return fs.unlinkSync(path);
-			}
-		}))
+		await Promise.all(
+			this.cache.getAllPossibleFilePaths().map((path) => {
+				if (fs.existsSync(path)) {
+					return fs.unlinkSync(path);
+				}
+			}),
+		);
 	}
 }

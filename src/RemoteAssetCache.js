@@ -1,5 +1,5 @@
 import debugUtil from "debug";
-import { parseXml } from '@rgrove/parse-xml';
+import { parseXml } from "@rgrove/parse-xml";
 
 import Sources from "./Sources.js";
 import AssetCache from "./AssetCache.js";
@@ -41,7 +41,7 @@ export default class RemoteAssetCache extends AssetCache {
 			source: AssetCache.getCacheKey(source, options),
 		};
 
-		if(options.type === "xml" || options.type === "parsed-xml") {
+		if (options.type === "xml" || options.type === "parsed-xml") {
 			cacheKey.type = options.type;
 		}
 
@@ -54,7 +54,7 @@ export default class RemoteAssetCache extends AssetCache {
 			}
 		}
 
-		if(Object.keys(cacheKey).length > 1) {
+		if (Object.keys(cacheKey).length > 1) {
 			return JSON.stringify(cacheKey);
 		}
 
@@ -62,17 +62,17 @@ export default class RemoteAssetCache extends AssetCache {
 	}
 
 	static cleanUrl(url) {
-		if(!Sources.isFullUrl(url)) {
+		if (!Sources.isFullUrl(url)) {
 			return url;
 		}
 
 		let cleanUrl;
-		if(typeof url === "string" || typeof url.toString === "function") {
+		if (typeof url === "string" || typeof url.toString === "function") {
 			cleanUrl = new URL(url);
-		} else if(url instanceof URL) {
+		} else if (url instanceof URL) {
 			cleanUrl = url;
 		} else {
-			throw new Error("Invalid source for cleanUrl: " + url)
+			throw new Error("Invalid source for cleanUrl: " + url);
 		}
 
 		cleanUrl.search = new URLSearchParams([]);
@@ -97,7 +97,7 @@ export default class RemoteAssetCache extends AssetCache {
 			return response.json();
 		} else if (type === "text" || type === "xml") {
 			return response.text();
-		} else if(type === "parsed-xml") {
+		} else if (type === "parsed-xml") {
 			return parseXml(await response.text());
 		}
 		return Buffer.from(await response.arrayBuffer());
@@ -109,16 +109,18 @@ export default class RemoteAssetCache extends AssetCache {
 
 	// Returns raw Promise
 	queue() {
-		if(!this.#queue) {
+		if (!this.#queue) {
 			throw new Error("Missing `#queue` instance.");
 		}
 
-		if(!this.#queuePromise) {
+		if (!this.#queuePromise) {
 			// optionsOverride not supported on fetch here for re-use
-			this.#queuePromise = this.#queue.add(() => this.fetch()).catch((e) => {
-				this.#queuePromise = undefined;
-				throw e;
-			});
+			this.#queuePromise = this.#queue
+				.add(() => this.fetch())
+				.catch((e) => {
+					this.#queuePromise = undefined;
+					throw e;
+				});
 		}
 
 		return this.#queuePromise;
@@ -160,7 +162,7 @@ export default class RemoteAssetCache extends AssetCache {
 				body = await this.source();
 			} else {
 				let fetchOptions = optionsOverride.fetchOptions || this.options.fetchOptions || {};
-				if(!Sources.isFullUrl(this.source)) {
+				if (!Sources.isFullUrl(this.source)) {
 					throw Sources.getInvalidSourceError(this.source);
 				}
 
@@ -178,20 +180,23 @@ export default class RemoteAssetCache extends AssetCache {
 						metadata.response = {
 							url: response.url,
 							status: response.status,
-							headers:  Object.fromEntries(response.headers.entries()),
+							headers: Object.fromEntries(response.headers.entries()),
 						};
 
 						body = await this.getResponseValue(response, type);
 					}
-				} catch(e) {
+				} catch (e) {
 					error = e;
 				}
 
-				if(!response?.ok || error) {
-					let errorMessage = response?.status || response?.statusText ? ` (${response?.status}): ${response.statusText}` : `: ${error.message}`;
+				if (!response?.ok || error) {
+					let errorMessage =
+						response?.status || response?.statusText
+							? ` (${response?.status}): ${response.statusText}`
+							: `: ${error.message}`;
 					throw new Error(`Bad response for ${this.displayUrl}${errorMessage}`, {
-						cause: error || response
-					})
+						cause: error || response,
+					});
 				}
 			}
 
@@ -199,12 +204,12 @@ export default class RemoteAssetCache extends AssetCache {
 				await super.save(body, type, metadata);
 			}
 
-			if(this.options.returnType === "response") {
+			if (this.options.returnType === "response") {
 				return {
 					...metadata.response,
 					body,
 					cache: "miss",
-				}
+				};
 			}
 
 			return body;
@@ -222,7 +227,7 @@ export default class RemoteAssetCache extends AssetCache {
 	// async but not explicitly declared for promise equality checks
 	// returns a Promise
 	async fetch(optionsOverride = {}) {
-		if(!this.#fetchPromise) {
+		if (!this.#fetchPromise) {
 			// one at a time. clear when finished
 			this.#fetchPromise = this.#fetch(optionsOverride).finally(() => {
 				this.#fetchPromise = undefined;

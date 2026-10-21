@@ -47,11 +47,11 @@ function createRemoteAssetCache(source, rawOptions = {}) {
 
 	let options = Object.assign({}, globalOptions, rawOptions);
 	let sourceKey = RemoteAssetCache.getRequestId(source, options);
-	if(!sourceKey) {
+	if (!sourceKey) {
 		return Promise.reject(Sources.getInvalidSourceError(source));
 	}
 
-	if(instCache[sourceKey]) {
+	if (instCache[sourceKey]) {
 		return instCache[sourceKey];
 	}
 

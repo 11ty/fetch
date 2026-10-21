@@ -10,7 +10,7 @@ export default class ExistsCache {
 	}
 
 	exists(target) {
-		if(this.#checks.has(target)) {
+		if (this.#checks.has(target)) {
 			return this.#checks.get(target);
 		}
 

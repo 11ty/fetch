@@ -15,9 +15,11 @@ const AssetCache = saveLocal.AssetCache;
 	let first = saveLocal("https://www.zachleat.com/img/avatar-2017-big.png", options);
 	promises.push(first);
 
-	promises.push(saveLocal("https://github.com/11ty/eleventy/releases.atom", {
-		type: "text"
-	}));
+	promises.push(
+		saveLocal("https://github.com/11ty/eleventy/releases.atom", {
+			type: "text",
+		}),
+	);
 
 	// let second = saveLocal("https://www.zachleat.com/img/avatar-2017-big.png", options);
 	// promises.push(second);

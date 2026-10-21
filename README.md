@@ -34,7 +34,7 @@ _[The full `eleventy-fetch` documentation is on 11ty.dev](https://www.11ty.dev/d
 npm run test
 ```
 
-- We use the [ava JavaScript test runner](https://github.com/avajs/ava) ([Assertions documentation](https://github.com/avajs/ava/blob/master/docs/03-assertions.md))
+- We use the [Node.js test runner](https://nodejs.org/api/test.html) ([Assertions documentation](https://nodejs.org/api/assert.html))
 - ℹ️ To keep tests fast, thou shalt try to avoid writing files in tests.
 
 <!--

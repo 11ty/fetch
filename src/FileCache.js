@@ -27,16 +27,16 @@ export default class FileCache {
 
 	constructor(cacheFilename, options = {}) {
 		this.cacheFilename = cacheFilename;
-		if(options.dir) {
+		if (options.dir) {
 			this.#cacheDirectory = options.dir;
 		}
-		if(options.source) {
+		if (options.source) {
 			this.#source = options.source;
 		}
 	}
 
 	setDefaultType(type) {
-		if(type) {
+		if (type) {
 			this.#defaultType = type;
 		}
 	}
@@ -54,7 +54,7 @@ export default class FileCache {
 			return;
 		}
 
-		if(!this.#directoryManager) {
+		if (!this.#directoryManager) {
 			// standalone fallback (for tests)
 			this.#directoryManager = new DirectoryManager();
 		}
@@ -80,14 +80,14 @@ export default class FileCache {
 	}
 
 	getContentsPath(type) {
-		if(!type) {
+		if (!type) {
 			throw new Error("Missing cache type for " + this.fsPath);
 		}
 
 		// normalize to storage type
-		if(type === "xml") {
+		if (type === "xml") {
 			type = "text";
-		} else if(type === "parsed-xml") {
+		} else if (type === "parsed-xml") {
 			type = "json";
 		}
 
@@ -100,16 +100,16 @@ export default class FileCache {
 	}
 
 	get() {
-		if(this.#metadata) {
+		if (this.#metadata) {
 			return this.#metadata;
 		}
 
-		if(!existsCache.exists(this.fsPath)) {
+		if (!existsCache.exists(this.fsPath)) {
 			return;
 		}
 
 		debug(`Fetching from cache ${this.fsPath}`);
-		if(this.#source) {
+		if (this.#source) {
 			debugAssets("[11ty/eleventy-fetch] Reading via %o", this.#source);
 		} else {
 			debugAssets("[11ty/eleventy-fetch] Reading %o", this.fsPath);
@@ -120,10 +120,10 @@ export default class FileCache {
 
 		let json;
 		// Backwards compatibility with previous caches usingn flat-cache and `flatted`
-		if(data.startsWith(`[["1"],`)) {
+		if (data.startsWith(`[["1"],`)) {
 			let flattedParsed = parse(data);
-			if(flattedParsed?.[0]?.value) {
-				json = flattedParsed?.[0]?.value
+			if (flattedParsed?.[0]?.value) {
+				json = flattedParsed?.[0]?.value;
 			}
 		} else {
 			json = JSON.parse(data);
@@ -146,10 +146,11 @@ export default class FileCache {
 	}
 
 	hasContents(type) {
-		if(this.#contents) {
+		if (this.#contents) {
 			return true;
 		}
-		if(this.get()?.contents) { // backwards compat with very old caches
+		if (this.get()?.contents) {
+			// backwards compat with very old caches
 			return true;
 		}
 		return existsCache.exists(this.getContentsPath(type));
@@ -160,25 +161,25 @@ export default class FileCache {
 	}
 
 	getContents() {
-		if(this.#contents) {
+		if (this.#contents) {
 			return this.#contents;
 		}
 
 		let metadata = this.get();
 		// backwards compat with old caches
-		if(metadata?.contents) {
+		if (metadata?.contents) {
 			// already parsed, part of the top level file
 			let normalizedContent = this._backwardsCompatGetContents(this.get(), this.getType());
 			this.#contents = normalizedContent;
 			return normalizedContent;
 		}
 
-		if(!existsCache.exists(this.contentsPath)) {
+		if (!existsCache.exists(this.contentsPath)) {
 			return;
 		}
 
 		debug(`Fetching from cache ${this.contentsPath}`);
-		if(this.#source) {
+		if (this.#source) {
 			debugAssets("[11ty/eleventy-fetch] Reading (side loaded) via %o", this.#source);
 		} else {
 			debugAssets("[11ty/eleventy-fetch] Reading (side loaded) %o", this.contentsPath);
@@ -197,14 +198,22 @@ export default class FileCache {
 	}
 
 	save() {
-		if(this.#dryRun || !this.#savePending || this.#metadata && Object.keys(this.#metadata) === 0) {
+		if (
+			this.#dryRun ||
+			!this.#savePending ||
+			(this.#metadata && Object.keys(this.#metadata) === 0)
+		) {
 			return;
 		}
 
 		this.ensureDir(); // doesn’t add to counts (yet?)
 
 		// contents before metadata
-		debugAssets("[11ty/eleventy-fetch] Writing %o (side loaded) from %o", this.contentsPath, this.#source);
+		debugAssets(
+			"[11ty/eleventy-fetch] Writing %o (side loaded) from %o",
+			this.contentsPath,
+			this.#source,
+		);
 
 		this.#counts.write++;
 		// the contents must exist before the cache metadata are saved below
@@ -227,7 +236,7 @@ export default class FileCache {
 		let types = ["text", "buffer", "json"];
 		let paths = new Set();
 		paths.add(this.fsPath);
-		for(let type of types) {
+		for (let type of types) {
 			paths.add(this.getContentsPath(type));
 		}
 		return Array.from(paths);

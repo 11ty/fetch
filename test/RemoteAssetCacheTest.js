@@ -148,17 +148,21 @@ test("Fetching pass in URL", async () => {
 });
 
 test("Fetching pass non-stringable", async () => {
-	await assert.rejects(async () => {
-		class B {}
-		let source = new B();
+	await assert.rejects(
+		async () => {
+			class B {}
+			let source = new B();
 
-		let ac = new RemoteAssetCache(source, undefined, {
-			dryRun: true,
-		});
-		await ac.fetch();
-	}, {
-		message: "Invalid source: must be a string, function, or Promise. If a function or Promise, you must provide a `toString()` method or an `options.requestId` unique key. Received: [object Object]",
-	});
+			let ac = new RemoteAssetCache(source, undefined, {
+				dryRun: true,
+			});
+			await ac.fetch();
+		},
+		{
+			message:
+				"Invalid source: must be a string, function, or Promise. If a function or Promise, you must provide a `toString()` method or an `options.requestId` unique key. Received: [object Object]",
+		},
+	);
 });
 
 test("Fetching pass class with toString()", async () => {
@@ -212,14 +216,14 @@ test("formatUrlForDisplay (using removeUrlQueryParams and requestId)", async () 
 	let longUrl =
 		"https://example.com/207115/photos/243-0-1.jpg?Policy=FAKE_THING~2123ksjhd&Signature=FAKE_THING~2123ksjhd&Key-Pair-Id=FAKE_THING~2123ksjhd";
 	assert.equal(
-		new RemoteAssetCache(function() {}, ".cache", {
+		new RemoteAssetCache(function () {}, ".cache", {
 			requestId: longUrl,
 			removeUrlQueryParams: true,
 			formatUrlForDisplay(url) {
 				return url;
 			},
 		}).displayUrl,
-		"function() {}",
+		"function () {}",
 	);
 });
 
@@ -234,9 +238,7 @@ test("Error with `cause`", async () => {
 
 	try {
 		await assert.rejects(asset.fetch(), (e) => {
-			assert.ok(
-				e.message.startsWith(`Bad response for ${finalUrl} (404):`),
-			);
+			assert.ok(e.message.startsWith(`Bad response for ${finalUrl} (404):`));
 			assert.ok(e.cause);
 			return true;
 		});
@@ -259,7 +261,6 @@ test("supports promises that resolve", async () => {
 	} catch (e) {}
 
 	assert.deepEqual(actual, expected);
-
 });
 
 test("supports promises that reject", async () => {
@@ -296,7 +297,6 @@ test("supports async functions that return data", async () => {
 	} catch (e) {}
 
 	assert.deepEqual(actual, expected);
-
 });
 
 test("supports async functions that throw", async () => {
@@ -322,27 +322,27 @@ test("supports async functions that throw", async () => {
 test("type: xml", async () => {
 	let feedUrl = fakeUrl("/remote/feed.xml");
 	let ac = new RemoteAssetCache(feedUrl, ".cache", {
-		type: "xml"
+		type: "xml",
 	});
 	let xml = await ac.fetch();
 	try {
 		await ac.destroy();
 	} catch (e) {}
 
-	assert.equal(xml.length > 50, true)
+	assert.equal(xml.length > 50, true);
 });
 
 test("type: parsed-xml", async () => {
 	let feedUrl = fakeUrl("/remote/feed.xml");
 	let ac = new RemoteAssetCache(feedUrl, ".cache", {
-		type: "parsed-xml"
+		type: "parsed-xml",
 	});
 	let xml = await ac.fetch();
 	try {
 		await ac.destroy();
 	} catch (e) {}
 
-	assert.equal(xml.children.length, 1)
+	assert.equal(xml.children.length, 1);
 });
 
 test("returnType: response, cache miss", async () => {
@@ -361,11 +361,10 @@ test("returnType: response, cache miss", async () => {
 	assert.equal(response.url, feedUrl);
 	assert.equal(response.status, 200);
 	assert.ok(response.headers.server);
-	assert.ok(response.headers['last-modified']);
+	assert.ok(response.headers["last-modified"]);
 	assert.ok(response.body);
 	assert.equal(response.cache, "miss");
 });
-
 
 test("returnType: response, cache hit", async () => {
 	let feedUrl = fakeUrl("/remote/feed.xml");
@@ -386,4 +385,3 @@ test("returnType: response, cache hit", async () => {
 
 	assert.equal(response.cache, "hit");
 });
-
