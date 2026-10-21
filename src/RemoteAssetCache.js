@@ -159,18 +159,21 @@ export default class RemoteAssetCache extends AssetCache {
 
 		this.#lastFetchType = "miss";
 
+		let isDryRun = optionsOverride.dryRun || this.options.dryRun;
+		let body;
+		let metadata = {};
+		let type = optionsOverride.type || this.options.type;
+
 		try {
-			let isDryRun = optionsOverride.dryRun || this.options.dryRun;
 			this.log(`Fetching ${this.displayUrl}`);
 
-			let body;
-			let metadata = {};
-			let type = optionsOverride.type || this.options.type;
 			if (typeof this.source === "object" && typeof this.source.then === "function") {
 				body = await this.source;
+				type ||= RemoteAssetCache.inferType(body);
 			} else if (typeof this.source === "function") {
 				// sync or async function
 				body = await this.source();
+				type ||= RemoteAssetCache.inferType(body);
 			} else {
 				let fetchOptions = { ...(optionsOverride.fetchOptions || this.options.fetchOptions) };
 				let timeoutMs = this.getTimeoutMs(optionsOverride.timeout ?? this.options.timeout);
@@ -217,20 +220,6 @@ export default class RemoteAssetCache extends AssetCache {
 					});
 				}
 			}
-
-			if (!isDryRun) {
-				await super.save(body, type, metadata);
-			}
-
-			if (this.options.returnType === "response") {
-				return {
-					...metadata.response,
-					body,
-					cache: "miss",
-				};
-			}
-
-			return body;
 		} catch (e) {
 			if (this.cachedObject && this.getDurationMs(this.duration) > 0) {
 				debug(`Error fetching ${this.displayUrl}. Message: ${e.message}`);
@@ -240,6 +229,32 @@ export default class RemoteAssetCache extends AssetCache {
 				return Promise.reject(e);
 			}
 		}
+
+		// Important that cache failures aren’t saved (this used to be in the `try` above) #67
+		if (!isDryRun) {
+			await super.save(body, type, metadata);
+		}
+
+		if (this.options.returnType === "response") {
+			return {
+				...metadata.response,
+				body,
+				cache: "miss",
+			};
+		}
+
+		return body;
+	}
+
+	// Used for function and Promise sources without an explicit `type`
+	static inferType(body) {
+		if (Buffer.isBuffer(body)) {
+			return "buffer";
+		}
+		if (typeof body === "string") {
+			return "text";
+		}
+		return "json";
 	}
 
 	// async but not explicitly declared for promise equality checks

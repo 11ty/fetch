@@ -47,6 +47,10 @@ function createRemoteAssetCache(source, rawOptions = {}) {
 	}
 
 	let options = Object.assign({}, globalOptions, rawOptions);
+	// Function and Promise sources infer `type` from the returned value (#67)
+	if (!rawOptions?.type && (typeof source === "function" || typeof source?.then === "function")) {
+		delete options.type;
+	}
 	let sourceKey = RemoteAssetCache.getRequestId(source, options);
 	if (!sourceKey) {
 		return Promise.reject(Sources.getInvalidSourceError(source));

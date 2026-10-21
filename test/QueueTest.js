@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import Cache, { queue, createFetch } from "../fetch.js";
 import { fakeUrl, installFakeFetch } from "./helpers/FakeFetch.js";
 
@@ -236,4 +237,26 @@ test("Refetches data on transient failures", async () => {
 
 	await assert.rejects(async () => await ac1.queue());
 	assert.equal(await ac1.queue(), successData);
+});
+
+test("Function source without a type infers json and writes to the cache (#67)", async () => {
+	let calls = 0;
+	let fn = async () => {
+		calls++;
+		return { foo: "bar" };
+	};
+	let options = { requestId: "infer-type-json", duration: "1h" };
+
+	let ac = createFetch(fn, options);
+	try {
+		assert.deepEqual(await ac.queue(), { foo: "bar" });
+		assert.equal(ac.cachedObject.type, "json");
+		assert.equal(fs.readFileSync(ac.cache.contentsPath, "utf8"), `{"foo":"bar"}`);
+		assert.deepEqual(await ac.fetch(), { foo: "bar" });
+		assert.equal(calls, 1);
+	} finally {
+		try {
+			await ac.destroy();
+		} catch (e) {}
+	}
 });

@@ -412,3 +412,32 @@ test("returnType: response, cache hit", async () => {
 
 	assert.equal(response.cache, "hit");
 });
+
+test("inferType", () => {
+	assert.equal(RemoteAssetCache.inferType(Buffer.from("a")), "buffer");
+	assert.equal(RemoteAssetCache.inferType("a"), "text");
+	assert.equal(RemoteAssetCache.inferType({ a: 1 }), "json");
+	assert.equal(RemoteAssetCache.inferType([1]), "json");
+});
+
+test("Promise source without a type infers text", async () => {
+	let asset = new RemoteAssetCache(Promise.resolve("hello"), undefined, {
+		requestId: "infer-type-text",
+	});
+
+	assert.equal(await asset.fetch(), "hello");
+	assert.equal(asset.cachedObject.type, "text");
+
+	try {
+		await asset.destroy();
+	} catch (e) {}
+});
+
+test("Cache write errors are not hidden by the expired cache fallback (#67)", async () => {
+	let asset = new RemoteAssetCache(async () => ({ foo: "bar" }), undefined, {
+		type: "buffer",
+		requestId: "write-error",
+	});
+
+	await assert.rejects(asset.fetch(), { code: "ERR_INVALID_ARG_TYPE" });
+});
