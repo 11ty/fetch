@@ -50,7 +50,8 @@ class RemoteAssetCache extends AssetCache {
 				cacheKey.method = options.fetchOptions.method;
 			}
 			if (options.fetchOptions.body) {
-				cacheKey.body = options.fetchOptions.body;
+				let body = options.fetchOptions.body;
+				cacheKey.body = body instanceof URLSearchParams ? body.toString() : body;
 			}
 		}
 
