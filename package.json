@@ -42,7 +42,7 @@
 	},
 	"dependencies": {
 		"@11ty/eleventy-utils": "^3.0.1",
-		"@rgrove/parse-xml": "^5.0.0",
+		"@rgrove/parse-xml": "^5.1.0",
 		"debug": "^4.4.3",
 		"flatted": "^3.4.4",
 		"p-queue": "^10.0.0"
